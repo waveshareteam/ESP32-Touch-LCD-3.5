@@ -4,11 +4,11 @@
 
 ## 功能
 
-运行 320 × 480 竖屏桌面，包含 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048 和 Mic Test，共预留三页桌面。
+运行 320 × 480 竖屏桌面，包含 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048、Mic Test、Button Test 和 Display Test，共预留三页桌面。启动时保持背光关闭，桌面首帧传输完成后再点亮。
 
 ## 硬件需求
 
-ESP32-Touch-LCD-3.5（16 MB Flash、2 MB PSRAM）、USB-C 数据线；媒体功能需要 FAT 格式 microSD 卡。本型号没有摄像头及陀螺仪。
+ESP32-Touch-LCD-3.5（16 MB Flash、2 MB PSRAM）、USB-C 数据线；媒体功能需要 FAT32 格式 microSD 卡。本型号没有摄像头及陀螺仪。
 
 ## 怎么运行
 
@@ -23,7 +23,9 @@ idf.py build flash monitor
 
 ## 预期现象
 
-桌面显示九个应用。SD 卡的 `/photo` 放 JPEG，`/music` 放 MP3；联网后打开 AIChats 完成激活，再说“你好小智”或点击 Talk 开始对话。
+桌面显示 11 个应用。SD 卡的 `/photo` 放 JPEG，`/music` 放 MP3；联网后打开 AIChats 完成激活，再说“你好小智”或点击 Talk 开始对话。
+
+短按 PWR 按键一次开机，长按 5 秒关机。在 Button Test 中测试 PWR 时请短按。
 
 各应用操作与配网步骤请参照[使用说明](USER_GUIDE_ZH.md)。
 

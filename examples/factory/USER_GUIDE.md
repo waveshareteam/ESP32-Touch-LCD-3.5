@@ -8,6 +8,8 @@ Use a USB data cable to power ESP32-Touch-LCD-3.5. To restore the factory softwa
 
 The desktop is portrait (320 × 480) and has three pages. Swipe left or right to switch pages; Settings is first and AIChats is second. Most applications have a back arrow; in Photos, swipe upward from the bottom edge to return. Touch Test also supports BOOT to exit.
 
+Short press PWR once to power on; press and hold PWR for 5 seconds to power off. During startup, the backlight remains off until the first desktop frame has been transferred.
+
 ## Connecting to Wi-Fi
 
 The board supports 2.4 GHz Wi-Fi. Saved credentials take priority; otherwise it tries the demonstration hotspot `weather-wifi`, password `12345678`.
@@ -45,6 +47,8 @@ Use 320 × 480 JPEGs for predictable memory usage and quick loading. Photos scan
 | Sensor | View hardware RTC time. This board has no motion or temperature/humidity sensor. |
 | 2048 | Swipe to move tiles; tap **New** to start again. |
 | Mic Test | Watch the microphone level without an SD card. Insert a card, tap **Record** to save up to 10 seconds, then **Play** to replay the latest recording. Files are saved under `/recordings`. |
+| Button Test | Press and release BOOT (GPIO0, active low) and PWR (GPIO36, active high) to check their states, counts and PASS results. Tap **Test again** to reset. Short press PWR; holding it retains the normal hardware shutdown behavior. |
+| Display Test | Tap the five-color monitor icon to cycle full-screen red, green, blue, yellow and white at one-second intervals. Double tap anywhere on the screen during any color to return to the desktop. |
 
 Music, Mic Test and AIChats share one audio device exclusively. Exit the current audio application before opening another one.
 
