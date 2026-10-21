@@ -4,7 +4,7 @@
 
 ## What It Does
 
-Runs the portrait 320 × 480 desktop with Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test. Three launcher pages are available. The backlight stays off until the initial desktop frame has been transferred to the LCD.
+Runs the portrait 320 × 480 desktop with Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test. Three launcher pages are available. The screen lights up when the desktop is ready.
 
 ## Hardware Required
 

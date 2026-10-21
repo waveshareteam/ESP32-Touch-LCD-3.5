@@ -8,7 +8,7 @@ Use a USB data cable to power ESP32-Touch-LCD-3.5. To restore the factory softwa
 
 The desktop is portrait (320 × 480) and has three pages. Swipe left or right to switch pages; Settings is first and AIChats is second. Most applications have a back arrow; in Photos, swipe upward from the bottom edge to return. Touch Test also supports BOOT to exit.
 
-Short press PWR once to power on; press and hold PWR for 5 seconds to power off. During startup, the backlight remains off until the first desktop frame has been transferred.
+Short press PWR once to power on; press and hold PWR for 5 seconds to power off. The screen lights up when the desktop is ready.
 
 ## Connecting to Wi-Fi
 
@@ -19,7 +19,7 @@ The board supports 2.4 GHz Wi-Fi. Saved credentials take priority; otherwise it 
 3. Open `http://192.168.4.1` while connected to that hotspot, enter your router's SSID and password, and submit.
 4. Wait for the connection result on the page and device. Credentials are saved after a successful connection.
 
-**Wi-Fi scan** only lists nearby networks, signal strength, security and channel. It does not connect to a selected network. An empty SSID is shown as hidden; this is different from a Chinese network name.
+**Wi-Fi scan** only lists nearby networks, signal strength, security and channel. It does not connect to a selected network.
 
 After an Internet connection is available, network time updates the desktop clock in UTC+8. The Sensor application's hardware RTC remains independent.
 
@@ -32,7 +32,7 @@ Use a FAT32 microSD card. Create these folders at the card root before inserting
 /music/       MP3 music (.mp3)
 ```
 
-Use 320 × 480 JPEGs for predictable memory usage and quick loading. Photos scans and decodes files when the application opens. Exit media applications before removing the card; the firmware prevents unmounting while an application holds a card lease.
+Use 320 × 480 JPEGs for faster loading. After adding photos, reopen Photos to view them. Exit applications that use the SD card before removing it.
 
 ## Applications
 
@@ -42,21 +42,15 @@ Use 320 × 480 JPEGs for predictable memory usage and quick loading. Photos scan
 | AIChats | Connect to the Internet and complete activation using the code and instructions on screen. Say “你好小智” or tap **Talk** to start a conversation. This board has no camera; vision tools are not provided. |
 | Touch Test | Draw across the screen to check touch coverage. Use the upper-left back button or BOOT to return. |
 | Photos | View JPEGs from `/photo`; swipe left/right to change images and upward from the bottom edge to exit. |
-| Weather | Fetch weather over the Internet using the included service configuration. The account/location can be changed in the weather menu under `idf.py menuconfig`. |
+| Weather | Connect to the Internet to view weather information. |
 | Music | Play MP3s from `/music`; use previous, next and the combined play/pause button. Adjust volume in Settings. |
 | Sensor | View hardware RTC time. This board has no motion or temperature/humidity sensor. |
 | 2048 | Swipe to move tiles; tap **New** to start again. |
 | Mic Test | Watch the microphone level without an SD card. Insert a card, tap **Record** to save up to 10 seconds, then **Play** to replay the latest recording. Files are saved under `/recordings`. |
-| Button Test | Press and release BOOT (GPIO0, active low) and PWR (GPIO36, active high) to check their states, counts and PASS results. Tap **Test again** to reset. Short press PWR; holding it retains the normal hardware shutdown behavior. |
+| Button Test | Press and release BOOT and PWR to check their states, counts and PASS results. Tap **Test again** to reset. Use short presses for PWR to avoid powering off. |
 | Display Test | Tap the five-color monitor icon to cycle full-screen red, green, blue, yellow and white at one-second intervals. Double tap anywhere on the screen during any color to return to the desktop. |
 
 Music, Mic Test and AIChats share one audio device exclusively. Exit the current audio application before opening another one.
-
-## BSP maintenance
-
-The BSP follows the S3-3.5 file layout and common interfaces. `include/bsp/esp32_touch_lcd_3_5.h` contains pin assignments and I2C, audio and LVGL interfaces; `display.h` and `touch.h` expose panel and touch interfaces. `esp32_touch_lcd_3_5.cpp` implements I2C, SD, audio, panel, touch and LVGL in that order. `bsp_board.cpp` owns the IO expander, AXP2101, buttons, RTC, Wi-Fi and board initialization. Initialize peripherals with `bsp_init()`, then call `bsp_display_show()` after creating the desktop to release the backlight.
-
-Hardware differences remain local to the BSP: PWR is active-high GPIO36, BOOT is active-low GPIO0, and LCD/SD share SPI2 with serialized transactions and an LCD DMA completion barrier. This board has no IMU or camera. Display Test enables FT6336 hardware gestures through register `0xD0`, polls register `0xD3` for double click `0x24`, and clears and verifies the result to prevent replay. Leaving or pausing the test stops the reader and disables gesture mode to restore normal touch coordinates.
 
 ## Common questions
 

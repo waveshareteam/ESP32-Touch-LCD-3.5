@@ -4,7 +4,7 @@
 
 ## 功能
 
-运行 320 × 480 竖屏桌面，包含 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048、Mic Test、Button Test 和 Display Test，共预留三页桌面。启动时保持背光关闭，桌面首帧传输完成后再点亮。
+运行 320 × 480 竖屏桌面，包含 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048、Mic Test、Button Test 和 Display Test，共预留三页桌面。启动完成后，屏幕亮起并显示桌面。
 
 ## 硬件需求
 
