@@ -46,9 +46,11 @@ Use 320 × 480 JPEGs for faster loading. After adding photos, reopen Photos to v
 | Music | Play MP3s from `/music`; use previous, next and the combined play/pause button. Adjust volume in Settings. |
 | Sensor | View hardware RTC time. This board has no motion or temperature/humidity sensor. |
 | 2048 | Swipe to move tiles; tap **New** to start again. |
-| Mic Test | Watch the microphone level without an SD card. Insert a card, tap **Record** to save up to 10 seconds, then **Play** to replay the latest recording. Files are saved under `/recordings`. |
+| Mic Test | Watch the microphone level without an SD card. Insert a card and tap **Record** to record for up to 10 seconds; tap **Stop** to finish early, then **Play** to replay the latest recording. Files are saved under `/recordings`. |
 | Button Test | Press and release BOOT and PWR to check their states, counts and PASS results. Tap **Test again** to reset. Use short presses for PWR to avoid powering off. |
 | Display Test | Tap the five-color monitor icon to cycle full-screen red, green, blue, yellow and white at one-second intervals. Double tap anywhere on the screen during any color to return to the desktop. |
+
+Button Test samples the keys while open and counts complete press/release cycles. If a key is held when entering the page or resetting, release it before pressing again. PWR retains its long-hold power-off function, so use short presses. Exit using the on-screen back arrow.
 
 Music, Mic Test and AIChats share one audio device exclusively. Exit the current audio application before opening another one.
 

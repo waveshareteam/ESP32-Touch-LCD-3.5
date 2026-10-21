@@ -43,7 +43,7 @@
 3. 使用 Flash Download Tool 选择 **ESP32**，在 `0x0` 地址烧录完整合并镜像；更换分区布局前先擦除 Flash。
 4. 复位进入桌面，在 Settings 配网，再打开 AIChats 完成激活。
 
-[新版出厂源码](examples/factory/README_ZH.md)包含 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048 和 Mic Test。默认连接 2.4 GHz 热点 `weather-wifi`，密码 `12345678`；也可在 Settings 扫码配网。[旧版出厂示例](examples/esp-idf/01_factory/README_ZH.md)保留供参考。
+[新版出厂源码](examples/factory/README_ZH.md)提供 Settings、AIChats、Touch Test、Photos、Weather、Music、Sensor（仅 RTC）、2048、Mic Test、Button Test 和 Display Test，共 11 个应用。配网步骤和应用操作请参照[使用说明](examples/factory/USER_GUIDE_ZH.md)。[旧版出厂示例源码](examples/esp-idf/01_factory/README_ZH.md)保留供参考。
 
 示例固件包可从 [Releases](https://github.com/waveshareteam/ESP32-Touch-LCD-3.5/releases) 获取；其烧录脚本和说明随包提供。
 
@@ -80,6 +80,8 @@
 | [11_bt_music_receiver_arduino_i2s](examples/arduino/examples/11_bt_music_receiver_arduino_i2s/README_ZH.md) | 接收经典蓝牙 A2DP 音频并显示曲目信息。 |
 
 公共库见 [examples/arduino/libraries](examples/arduino/libraries/)。
+
+<a id="development-environment"></a>
 
 ## 🛠️ 开发环境
 
