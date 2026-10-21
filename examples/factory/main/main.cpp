@@ -13,6 +13,8 @@
 #include "Games.hpp"
 #include "XiaozhiApp.hpp"
 #include "MicTest.hpp"
+#include "ButtonTest.hpp"
+#include "DisplayTest.hpp"
 #include "wifi_manager.h"
 #include "settings_service.h"
 #include "desktop.hpp"
@@ -64,7 +66,7 @@ static bool app_start()
     if (!phone->addStylesheet(stylesheet) || !phone->activateStylesheet(stylesheet) || !phone->begin()) return false;
 
     unsigned installed = 0;
-    // Desktop order: Settings, Xiaozhi, existing APPs, then Mic Test.
+    // Preserve existing order; append Button Test and Display Test.
     auto *app_settings = Settings::requestInstance();
     int settings_id = app_settings ? phone->installApp(app_settings) : -1;
     if (settings_id >= 0) ++installed;
@@ -86,6 +88,8 @@ static bool app_start()
         {"Music", Music::requestInstance()}, {"Sensor", Sensor::requestInstance()},
         {"2048", Games::requestInstance()},
         {"Mic Test", MicTest::requestInstance()},
+        {"Button Test", ButtonTest::requestInstance()},
+        {"Display Test", DisplayTest::requestInstance()},
     };
     for(const auto &entry:apps) {
         int id=entry.app?phone->installApp(entry.app):-1;
@@ -101,7 +105,7 @@ static bool app_start()
     if (!desktop_status_start(phone->getDisplay().getStatusBar())) {
         ESP_LOGW(TAG, "Desktop status updates could not start");
     }
-    ESP_LOGI(TAG, "Desktop ready: 320x480 portrait, 3 pages, %u/9 APPs, Settings ID=%d, AIChats ID=%d, Touch Test ID=%d", installed, settings_id, xiaozhi_id, drawing_id);
+    ESP_LOGI(TAG, "Desktop ready: 320x480 portrait, 3 pages, %u/11 APPs, Settings ID=%d, AIChats ID=%d, Touch Test ID=%d", installed, settings_id, xiaozhi_id, drawing_id);
     ESP_LOGI(TAG, "Free heap: internal=%u, PSRAM=%u", (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
              (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
     return installed > 0;
@@ -125,5 +129,9 @@ extern "C" void app_main(void)
             lv_obj_center(error);
             bsp_display_unlock();
         }
+    }
+    ret = bsp_display_show();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Initial screen presentation failed: %s", esp_err_to_name(ret));
     }
 }

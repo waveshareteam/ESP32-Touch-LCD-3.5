@@ -121,8 +121,11 @@ esp_err_t bsp_io_expander_init(void)
     ESP_RETURN_ON_ERROR(esp_io_expander_set_dir(expander, IO_EXPANDER_PIN_NUM_0 | IO_EXPANDER_PIN_NUM_1 | IO_EXPANDER_PIN_NUM_2,
                                               IO_EXPANDER_OUTPUT), TAG, "EXIO outputs");
     gpio_config_t input_cfg = {};
-    input_cfg.pin_bit_mask = 1ULL << BSP_USER_INPUT;
+    input_cfg.pin_bit_mask = 1ULL << BSP_BUTTON_PWR;
     input_cfg.mode = GPIO_MODE_INPUT;
+    // GPIO36 has no internal pull resistors; SYS_OUT is biased by the board.
+    input_cfg.pull_up_en = GPIO_PULLUP_DISABLE;
+    input_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
     ESP_RETURN_ON_ERROR(gpio_config(&input_cfg), TAG, "GPIO36 input");
     ESP_RETURN_ON_ERROR(esp_io_expander_set_level(expander, IO_EXPANDER_PIN_NUM_0 | IO_EXPANDER_PIN_NUM_1, 0), TAG, "EXIO low");
     vTaskDelay(pdMS_TO_TICKS(100));
@@ -284,6 +287,23 @@ esp_err_t bsp_user_button_init(void)
 }
 uint32_t bsp_user_button_get_press_count(void) { return button_presses.load(); }
 
+esp_err_t bsp_button_get_pressed(bsp_button_id_t button, bool *pressed)
+{
+    if (!pressed) return ESP_ERR_INVALID_ARG;
+    switch (button) {
+    case BSP_BUTTON_ID_BOOT:
+        if (!boot_button) return ESP_ERR_INVALID_STATE;
+        *pressed = gpio_get_level(BSP_BUTTON_BOOT) == 0;
+        return ESP_OK;
+    case BSP_BUTTON_ID_PWR:
+        if (!expander_ready) return ESP_ERR_INVALID_STATE; // GPIO36 configured during board IO init.
+        *pressed = gpio_get_level(BSP_BUTTON_PWR) != 0;
+        return ESP_OK;
+    default:
+        return ESP_ERR_INVALID_ARG;
+    }
+}
+
 static bool valid_datetime(const bsp_sensor_datetime_t &d)
 {
     if (d.year < 2000 || d.year > 2099 || d.month < 1 || d.month > 12 ||
@@ -381,6 +401,8 @@ esp_err_t bsp_wifi_start(void)
 
 esp_err_t bsp_init(void)
 {
+    // Keep the panel dark until app_main has drawn the desktop.
+    ESP_RETURN_ON_ERROR(bsp_display_brightness_init(), TAG, "Backlight initialization");
     esp_err_t ret = nvs_flash_init();
     // Preserve saved data on NVS incompatibility; report instead of silently erasing.
     ESP_RETURN_ON_ERROR(ret, TAG, "NVS initialization");
