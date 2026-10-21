@@ -25,5 +25,5 @@ idf.py build flash monitor
 
 ## 常见问题
 
-请插入存有支持音频文件的 FAT 格式 microSD 卡。
+请插入存有支持音频文件的 FAT 格式 microSD 卡。[data/music](data/music/) 提供一首示例音频。
 

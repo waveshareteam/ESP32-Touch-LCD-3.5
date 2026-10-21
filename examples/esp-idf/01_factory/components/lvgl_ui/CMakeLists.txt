@@ -5,4 +5,4 @@ file(GLOB_RECURSE SRC_FILES "*.c" "*.cpp")
 
 idf_component_register(SRCS ${SRC_FILES}
                     INCLUDE_DIRS "."
-                    REQUIRES "lvgl" "XPowersLib" "sensorlib" "freertos" "spi_flash" "esp_psram" "driver" "esp_hw_support" "esp32-camera" "espressif__esp_lvgl_port" "esp_port")
+                    REQUIRES "lvgl" "XPowersLib" "sensorlib" "freertos" "spi_flash" "esp_psram" "driver" "esp_hw_support" "espressif__esp_lvgl_port" "esp_port")

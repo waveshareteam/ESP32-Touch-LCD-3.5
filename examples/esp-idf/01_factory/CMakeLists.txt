@@ -4,5 +4,8 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
+# This board has no camera; keep the legacy sources out of the build.
+set(EXCLUDE_COMPONENTS esp32-camera)
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(factory)

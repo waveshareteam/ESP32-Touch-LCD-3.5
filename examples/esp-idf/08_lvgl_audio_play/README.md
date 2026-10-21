@@ -25,5 +25,5 @@ The display shows playback controls and the speaker plays the selected file.
 
 ## Troubleshooting
 
-Insert a FAT-formatted microSD card containing supported audio files.
+Insert a FAT-formatted microSD card containing supported audio files. A sample track is provided in [data/music](data/music/).
 

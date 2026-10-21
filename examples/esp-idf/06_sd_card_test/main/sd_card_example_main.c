@@ -11,6 +11,9 @@
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
+#include "esp_log.h"
+#include "driver/spi_master.h"
+#include "driver/sdspi_host.h"
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
 #include "sd_test_io.h"
@@ -63,7 +66,7 @@ static esp_err_t s_example_write_file(const char *path, char *data)
         ESP_LOGE(TAG, "Failed to open file for writing");
         return ESP_FAIL;
     }
-    fprintf(f, data);
+    fprintf(f, "%s", data);
     fclose(f);
     ESP_LOGI(TAG, "File written");
 
