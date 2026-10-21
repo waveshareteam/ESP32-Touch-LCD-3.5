@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/waveshareteam/esp32-repo-template/v1/schema/product.schema.json",
+  "product": "ESP32-Touch-LCD-3.5",
+  "product_url": "https://www.waveshare.net/shop/ESP32-Touch-LCD-3.5.htm",
+  "tier": 0,
+  "target": "esp32",
+  "esp_idf": {
+    "versions": [
+      "v5.5.6",
+      "v6.1"
+    ]
+  },
+  "arduino": {
+    "core": "3.3.12",
+    "fqbn": "esp32:esp32:esp32:FlashSize=16M,PSRAM=enabled,FlashMode=qio,PartitionScheme=custom"
+  },
+  "factory_firmware": {
+    "esp_idf": "v5.5.4"
+  },
+  "overrides": {
+    "markdown_audit": {
+      "classification_rules": [
+        {
+          "category": "first_party_customer",
+          "patterns": [
+            "examples/factory/components/XiaozhiApp/README.md",
+            "examples/factory/components/XiaozhiApp/README_ZH.md"
+          ]
+        },
+        {
+          "category": "third_party",
+          "patterns": [
+            "examples/esp-idf/*/components/XPowersLib/**",
+            "examples/factory/components/XPowersLib/**",
+            "examples/esp-idf/*/components/sensorlib/**",
+            "examples/factory/components/sensorlib/**",
+            "examples/esp-idf/*/components/esp32-camera/**",
+            "examples/factory/components/esp32-camera/**",
+            "examples/esp-idf/*/components/brookesia_core/**",
+            "examples/factory/components/brookesia_core/**",
+            "examples/esp-idf/*/components/esp_xiaozhi/**",
+            "examples/factory/components/esp_xiaozhi/**",
+            "examples/esp-idf/*/components/mcp-c-sdk/**",
+            "examples/factory/components/mcp-c-sdk/**",
+            "examples/factory/components/XiaozhiApp/third_party/xiaozhi_esp32/**"
+          ]
+        }
+      ]
+    }
+  }
+}
+

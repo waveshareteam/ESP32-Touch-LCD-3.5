@@ -1,3 +1,0 @@
-dependencies:
-  idf: '>=5.2'
-  espressif/button: ^4.1.3
