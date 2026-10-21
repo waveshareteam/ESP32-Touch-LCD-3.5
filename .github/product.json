@@ -12,7 +12,7 @@
   },
   "arduino": {
     "core": "3.3.12",
-    "fqbn": "esp32:esp32:esp32:FlashSize=16M,PSRAM=enabled,FlashMode=qio,PartitionScheme=app3M_fat9M_16MB"
+    "fqbn": "esp32:esp32:esp32:FlashSize=16M,PSRAM=enabled,FlashMode=qio,PartitionScheme=custom"
   },
   "factory_firmware": {
     "esp_idf": "v5.5.4"
