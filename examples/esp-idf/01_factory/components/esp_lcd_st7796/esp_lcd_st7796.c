@@ -75,11 +75,11 @@ esp_err_t esp_lcd_new_panel_st7796(const esp_lcd_panel_io_handle_t io, const esp
         break;
     }
 #else
-    switch (panel_dev_config->rgb_endian) {
-    case LCD_RGB_ENDIAN_RGB:
+    switch (panel_dev_config->rgb_ele_order) {
+    case LCD_RGB_ELEMENT_ORDER_RGB:
         st7796->madctl_val = 0;
         break;
-    case LCD_RGB_ENDIAN_BGR:
+    case LCD_RGB_ELEMENT_ORDER_BGR:
         st7796->madctl_val |= LCD_CMD_BGR_BIT;
         break;
     default:

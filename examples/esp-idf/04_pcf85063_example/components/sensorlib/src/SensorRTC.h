@@ -36,6 +36,7 @@
 #endif /*defined(ARDUINO)*/
 
 #include <sys/time.h>
+#include <time.h>
 
 #define RTC_DAYS_IN_JANUARY     (31u)
 #define RTC_DAYS_IN_FEBRUARY    (28u)

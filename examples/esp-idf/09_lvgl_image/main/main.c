@@ -29,7 +29,7 @@
 #define EXAMPLE_LCD_PIXEL_CLK_HZ (40 * 1000 * 1000)
 #define EXAMPLE_LCD_CMD_BITS (8)
 #define EXAMPLE_LCD_PARAM_BITS (8)
-#define EXAMPLE_LCD_COLOR_SPACE (ESP_LCD_COLOR_SPACE_BGR)
+#define EXAMPLE_LCD_COLOR_SPACE (LCD_RGB_ELEMENT_ORDER_BGR)
 #define EXAMPLE_LCD_BITS_PER_PIXEL (16)
 #define EXAMPLE_LCD_DRAW_BUFF_DOUBLE (1)
 #define EXAMPLE_LCD_DRAW_BUFF_HEIGHT (50)
@@ -134,7 +134,7 @@ static esp_err_t app_lcd_init(void)
     };
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num = EXAMPLE_LCD_GPIO_RST,
-        .color_space = EXAMPLE_LCD_COLOR_SPACE,
+        .rgb_ele_order = EXAMPLE_LCD_COLOR_SPACE,
         .bits_per_pixel = EXAMPLE_LCD_BITS_PER_PIXEL,
         .vendor_config = &vendor_config,
     };
