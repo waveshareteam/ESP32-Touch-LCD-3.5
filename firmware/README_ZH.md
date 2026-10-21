@@ -6,7 +6,7 @@
 
 | 文件 | 用途 |
 | --- | --- |
-| `ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin` | 新版九应用出厂桌面 |
+| [ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin](ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin) | 11 应用出厂桌面，新增按键测试、颜色循环测试，首帧完成后点亮背光；ESP-IDF v5.5.4 |
 | `01_factory.bin` | 旧版出厂演示 |
 | `02_axp2101_example.bin` | AXP2101 电源管理示例 |
 | `03_button_power_save.bin` | 按键与省电示例 |
