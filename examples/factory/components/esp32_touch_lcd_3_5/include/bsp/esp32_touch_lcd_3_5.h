@@ -10,6 +10,12 @@
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_touch.h"
 #include "lvgl.h"
+#include "driver/i2s_std.h"
+#include "esp_codec_dev.h"
+#include "esp_lvgl_port.h"
+#include "bsp/config.h"
+#include "bsp/display.h"
+#include "bsp/touch.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,8 +26,6 @@ extern "C" {
 #define BSP_I2C_SDA             GPIO_NUM_21
 #define BSP_I2C_SCL             GPIO_NUM_22
 #define BSP_I2C_FREQ_HZ         400000
-#define BSP_LCD_H_RES           320
-#define BSP_LCD_V_RES           480
 #define BSP_LCD_SPI_HOST        SPI2_HOST
 #define BSP_LCD_MOSI            GPIO_NUM_23
 #define BSP_LCD_MISO            GPIO_NUM_19
@@ -43,94 +47,54 @@ extern "C" {
 #define BSP_I2S_DIN             GPIO_NUM_34
 #define BSP_AUDIO_PA            GPIO_NUM_NC
 
-typedef struct {
-    esp_err_t i2c, expander, power, display, touch;
-    esp_err_t button, audio, rtc, sdcard, wifi;
-} bsp_init_status_t;
+#define BSP_CAPS_DISPLAY 1
+#define BSP_CAPS_TOUCH 1
+#define BSP_CAPS_BUTTONS 1
+#define BSP_CAPS_AUDIO 1
+#define BSP_CAPS_AUDIO_SPEAKER 1
+#define BSP_CAPS_AUDIO_MIC 1
+#define BSP_CAPS_SDCARD 1
+#define BSP_CAPS_IMU 0
+#define BSP_CAPS_CAMERA 0
 
-/* Call once from app_main before starting APPs. Required power/display errors
- * are returned; optional peripheral failures are logged and stored in status. */
-esp_err_t bsp_init(void);
-const bsp_init_status_t *bsp_get_init_status(void);
 esp_err_t bsp_i2c_init(void);
+esp_err_t bsp_i2c_deinit(void);
 i2c_master_bus_handle_t bsp_i2c_get_handle(void);
-esp_err_t bsp_io_expander_init(void);
-esp_err_t bsp_io_expander_read_input(bool *high);
-esp_err_t bsp_power_init(void);
+
+/**************************************************************************************************
+ * I2S audio interface. Handles are BSP-owned; stop all users before deinit.
+ **************************************************************************************************/
+#define BSP_AUDIO_DMA_DESCRIPTORS 6
+#define BSP_AUDIO_DMA_FRAMES 240
+esp_err_t bsp_audio_init(const i2s_std_config_t *i2s_config);
+esp_err_t bsp_audio_init_voice_24k(void);
+esp_err_t bsp_audio_deinit(void);
+esp_codec_dev_handle_t bsp_audio_codec_speaker_init(void);
+esp_codec_dev_handle_t bsp_audio_codec_microphone_init(void);
+/* Bounded I2S access for full-duplex voice, after opening the shared codec. */
+esp_err_t bsp_audio_i2s_read(void *data, size_t size, size_t *read, uint32_t timeout_ms);
+esp_err_t bsp_audio_i2s_write(void *data, size_t size, size_t *written, uint32_t timeout_ms);
+
+typedef struct {
+    lvgl_port_cfg_t lvgl_port_cfg;
+    uint32_t buffer_size;
+    uint32_t trans_size;
+    bool double_buffer;
+    struct {
+        unsigned int buff_dma: 1;
+        unsigned int buff_spiram: 1;
+    } flags;
+} bsp_display_cfg_t;
 
 lv_display_t *bsp_display_start(void);
-lv_display_t *bsp_display_get(void);
+lv_display_t *bsp_display_start_with_config(const bsp_display_cfg_t *cfg);
 lv_indev_t *bsp_display_get_input_dev(void);
-esp_lcd_touch_handle_t bsp_touch_get_handle(void);
-/* Same APP-facing convention as RLCD: bool success, 0 waits indefinitely. */
 bool bsp_display_lock(uint32_t timeout_ms);
 void bsp_display_unlock(void);
-esp_err_t bsp_display_brightness_set(int percent);
-int bsp_display_brightness_get(void);
-esp_err_t bsp_user_button_init(void);
-uint32_t bsp_user_button_get_press_count(void);
-
-typedef struct {
-    bool connected, charging, vbus_present;
-    uint16_t voltage_mv;
-    int percentage;
-} bsp_battery_info_t;
-esp_err_t bsp_battery_get_info(bsp_battery_info_t *info);
-
-typedef struct {
-    uint16_t year;
-    uint8_t month, day, hour, minute, second, weekday;
-} bsp_sensor_datetime_t;
-esp_err_t bsp_rtc_init(void);
-esp_err_t bsp_rtc_get_datetime(bsp_sensor_datetime_t *datetime);
-esp_err_t bsp_rtc_set_datetime(const bsp_sensor_datetime_t *datetime);
-
-typedef struct {
-    bool mounted;
-    uint64_t capacity_bytes, total_bytes, free_bytes;
-} bsp_sdcard_info_t;
-esp_err_t bsp_sdcard_mount(void);
-/* Active APPs acquire/release a lease so Settings cannot unmount an in-use card. */
-esp_err_t bsp_sdcard_acquire(void);
-void bsp_sdcard_release(void);
-esp_err_t bsp_sdcard_unmount(void);
-esp_err_t bsp_sdcard_get_info(bsp_sdcard_info_t *info);
-
-/* ES8311 is one shared full-duplex codec, not an ES7210 echo-reference array.
- * One task acquires, opens, reads/writes, closes and releases a session.
- * Volume can be changed from another task; init does not play audio. */
-esp_err_t bsp_audio_init(void);
-bool bsp_audio_acquire(uint32_t timeout_ms);
-void bsp_audio_release(void);
-esp_err_t bsp_audio_open(uint32_t sample_rate, uint8_t channels);
-esp_err_t bsp_audio_close(void);
-esp_err_t bsp_audio_write(const void *data, size_t size);
-/* Push silence through the complete TX ring before pausing/closing playback. */
-esp_err_t bsp_audio_drain(void);
-esp_err_t bsp_audio_read(void *data, size_t size);
-esp_err_t bsp_audio_volume_set(int percent);
-int bsp_audio_volume_get(void);
-
-/* One shared ES8311. Ordinary APPs use the task-owned API above; Xiaozhi
- * holds one session across its control/input/playback tasks. Stop/join all
- * voice tasks before close/release. RX slots contain one physical microphone. */
-typedef enum { BSP_AUDIO_OWNER_NONE, BSP_AUDIO_OWNER_APP, BSP_AUDIO_OWNER_XIAOZHI } bsp_audio_owner_t;
-bsp_audio_owner_t bsp_audio_session_get_owner(void);
-const char *bsp_audio_owner_name(bsp_audio_owner_t owner);
-esp_err_t bsp_audio_session_acquire(bsp_audio_owner_t owner);
-esp_err_t bsp_audio_session_release(bsp_audio_owner_t owner);
-#define BSP_AUDIO_VOICE_CHANNELS 2
-esp_err_t bsp_audio_voice_open(uint32_t sample_rate, bool capture);
-esp_err_t bsp_audio_voice_read(void *pcm, size_t bytes, size_t *read, uint32_t timeout_ms);
-esp_err_t bsp_audio_voice_write(void *pcm, size_t bytes, size_t *written, uint32_t timeout_ms);
-esp_err_t bsp_audio_voice_mute(bool mute);
-esp_err_t bsp_audio_voice_close(void);
-
-/* Driver/netif initialization only. Credentials/scan/provisioning belong to APPs. */
-esp_err_t bsp_wifi_init(void);
-/* Start the initialized radio for scanning/provisioning. Does not connect. */
-esp_err_t bsp_wifi_start(void);
+void bsp_display_rotate(lv_display_t *disp, lv_disp_rotation_t rotation);
 
 #ifdef __cplusplus
 }
 #endif
+
+#include "bsp/board.h"
