@@ -1,35 +1,29 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
+# 01_factory
 
-# _Sample project_
+[English](README.md) | [简体中文](README_ZH.md)
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## What It Does
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+Legacy factory demo: touch drawing, settings, RTC and media.
 
+## Hardware Required
 
+ESP32-Touch-LCD-3.5, a USB-C data cable, and the onboard peripherals used above.
 
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
+## How to Run
 
-## Example folder contents
+Use a supported ESP-IDF terminal in this directory:
 
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
+```sh
+idf.py set-target esp32
+idf.py build flash monitor
 ```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
+
+## Expected Result
+
+Press BOOT to leave the initial touch test and open the application menu.
+
+## Troubleshooting
+
+The legacy Wi-Fi configuration is in main/main.cpp; it is independent of the new factory project.
+

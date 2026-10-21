@@ -1,73 +1,29 @@
-# XPowersLib Example
+# 02_axp2101_example
 
-### Prerequisites
+[English](README.md) | [简体中文](README_ZH.md)
 
-Please put XPowersLib and esp-idf in the same level directory, after configuring the esp-idf environment variable, enter `XPowersLib/examples/ESP_IDF_Example` and run the idf.py command directly
+## What It Does
 
+Read AXP2101 power status and handle its interrupt events.
 
-### Configure the Project
+## Hardware Required
 
-Open the project configuration menu (`idf.py menuconfig`).
+ESP32-Touch-LCD-3.5, a USB-C data cable, and the onboard peripherals used above.
 
-In the `XPowers Configuration` menu:
+## How to Run
 
-* Select the PMU Type in the `PMU_Type` option.
-* In `PMU SCL GPIO Num` select the clock pin to connect to the PMU,the default is 22
-* In `PMU SDAGPIO Num` select the data pin connected to the PMU,the default is 21
-* Select the interrupt pin connected to the PMU in `PMU Interrupt Pin`, the default is 35
+Use a supported ESP-IDF terminal in this directory:
 
-## How to Use Example
-
-Before project configuration and build, be sure to set the correct chip target using `idf.py set-target <chip_name>`.
-
-
-### Build and Flash
-
-Run `idf.py -p PORT flash monitor` to build, flash and monitor the project.
-
-(To exit the serial monitor, type ``Ctrl-]``.)
-
-See the [Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/get-started/index.html) for full steps to configure and use ESP-IDF to build projects.
-
-## Example Output
-
-The output information is to configure the output voltage and enable status of the PMU
-
-```
-I (345) mian: I2C initialized successfully
-I (355) AXP2101: Init PMU SUCCESS!
-I (385) AXP2101: DCDC=======================================================================
-I (385) AXP2101: DC1  :ENABLE    Voltage:3300 mV
-I (385) AXP2101: DC2  :DISABLE   Voltage:900 mV
-I (395) AXP2101: DC3  :ENABLE    Voltage:3300 mV
-I (395) AXP2101: DC4  :DISABLE   Voltage:1100 mV
-I (405) AXP2101: DC5  :DISABLE   Voltage:1200 mV
-I (405) AXP2101: ALDO=======================================================================
-I (415) AXP2101: ALDO1:ENABLE    Voltage:1800 mV
-I (425) AXP2101: ALDO2:ENABLE    Voltage:2800 mV
-I (425) AXP2101: ALDO3:ENABLE    Voltage:3300 mV
-I (435) AXP2101: ALDO4:ENABLE    Voltage:3000 mV
-I (435) AXP2101: BLDO=======================================================================
-I (445) AXP2101: BLDO1:ENABLE    Voltage:3300 mV
+```sh
+idf.py set-target esp32
+idf.py build flash monitor
 ```
 
-## Build process example
+## Expected Result
 
-Assuming you don't have esp-idf yet
+Power and battery information appears in the serial monitor.
 
-```
-mkdir -p ~/esp
-cd ~/esp
-git clone --recursive https://github.com/espressif/esp-idf.git
-git clone https://github.com/lewisxhe/XPowersLib.git
-cd esp-idf
-./install.sh
-. ./export.sh
-cd ..
-cd XPowersLib/examples/ESP_IDF_Example
-idf.py menuconfig
-idf.py build
-idf.py -b 921600 flash
-idf.py monitor
+## Troubleshooting
 
-```
+The configured PMU outputs must match the board supply rails.
+

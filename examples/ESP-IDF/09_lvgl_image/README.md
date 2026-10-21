@@ -1,19 +1,29 @@
-# ESP LVGL Touch Screen Example
+# 09_lvgl_image
 
-Very simple example for demonstration of initialization and usage of the `esp_lvgl_port` component. This example contains four main parts:
+[English](README.md) | [简体中文](README_ZH.md)
 
-## 1. LCD HW initialization - `app_lcd_init()`
+## What It Does
 
-Standard HW initialization of the LCD using [`esp_lcd`](https://github.com/espressif/esp-idf/tree/master/components/esp_lcd) component. Settings of this example are fully compatible with [ESP-BOX](https://github.com/espressif/esp-bsp/tree/master/esp-box) board.
+Display the embedded image with LVGL and touch support.
 
-## 2. Touch HW initialization - `app_touch_init()`
+## Hardware Required
 
-Standard HW initialization of the LCD touch using [`esp_lcd_touch`](https://github.com/espressif/esp-bsp/tree/master/components/lcd_touch/esp_lcd_touch) component. Settings of this example are fully compatible with [ESP-BOX](https://github.com/espressif/esp-bsp/tree/master/esp-box) board.
+ESP32-Touch-LCD-3.5, a USB-C data cable, and the onboard peripherals used above.
 
-## 3. LVGL port initialization - `app_lvgl_init()`
+## How to Run
 
-Initialization of the LVGL port.
+Use a supported ESP-IDF terminal in this directory:
 
-## 4. LVGL objects example usage - `app_main_display()`
+```sh
+idf.py set-target esp32
+idf.py build flash monitor
+```
 
-Very simple demonstration code of using LVGL objects after LVGL port initialization.
+## Expected Result
+
+The embedded image appears on the LCD.
+
+## Troubleshooting
+
+Image assets are compiled into this example; no SD card is required.
+
