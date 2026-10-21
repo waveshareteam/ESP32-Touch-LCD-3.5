@@ -6,6 +6,7 @@
 **/sdkconfig
 **/sdkconfig.old
 **/__pycache__/
+.DS_Store
 release-artifacts/
 release-downloads/
 release-dist/
