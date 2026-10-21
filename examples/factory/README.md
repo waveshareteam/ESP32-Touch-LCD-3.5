@@ -4,11 +4,11 @@
 
 ## What It Does
 
-Runs the portrait 320 × 480 desktop with Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048 and Mic Test. Three launcher pages are available.
+Runs the portrait 320 × 480 desktop with Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test. Three launcher pages are available. The screen lights up when the desktop is ready.
 
 ## Hardware Required
 
-ESP32-Touch-LCD-3.5 (16 MB Flash, 2 MB PSRAM), USB-C data cable and a FAT-formatted microSD card for media. This model has no camera or motion sensor.
+ESP32-Touch-LCD-3.5 (16 MB Flash, 2 MB PSRAM), USB-C data cable and a FAT32-formatted microSD card for media. This model has no camera or motion sensor.
 
 ## How to Run
 
@@ -23,7 +23,11 @@ Flash the complete project including its speech model, or use the tested merged 
 
 ## Expected Result
 
-The desktop opens with nine applications. Put JPEG images in `/photo` and MP3 files in `/music` on the SD card; open AIChats while online to activate voice chat, then say “你好小智” or tap Talk.
+The desktop opens with 11 applications. Put JPEG images in `/photo` and MP3 files in `/music` on the SD card; open AIChats while online to activate voice chat, then say “你好小智” or tap Talk.
+
+Short press PWR once to power on; press and hold PWR for 5 seconds to power off. Use short presses when checking PWR in Button Test.
+
+For application controls and Wi-Fi setup, see the [user guide](USER_GUIDE.md).
 
 ## Troubleshooting
 

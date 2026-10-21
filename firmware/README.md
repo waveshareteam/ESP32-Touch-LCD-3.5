@@ -6,7 +6,7 @@ Merged firmware images for ESP32-Touch-LCD-3.5, flashed at `0x0`. The current fa
 
 | File | Purpose |
 | --- | --- |
-| `ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin` | Current factory desktop with nine applications |
+| [ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin](ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin) | 11-application factory desktop with Button Test, Display Test and backlight enabled after the first frame; ESP-IDF v5.5.4 |
 | `01_factory.bin` | Legacy factory demo |
 | `02_axp2101_example.bin` | AXP2101 power-management example |
 | `03_button_power_save.bin` | Button and power-saving example |
