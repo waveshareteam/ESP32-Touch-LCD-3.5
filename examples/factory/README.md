@@ -4,7 +4,7 @@
 
 ## What It Does
 
-Runs the portrait 320 × 480 desktop with Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test. Three launcher pages are available. The screen lights up when the desktop is ready.
+Provides a portrait 320 × 480 desktop with 11 applications: Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test.
 
 ## Hardware Required
 
@@ -12,18 +12,11 @@ ESP32-Touch-LCD-3.5 (16 MB Flash, 2 MB PSRAM), USB-C data cable and a FAT32-form
 
 ## How to Run
 
-Use ESP-IDF v5.5.4 in this directory:
-
-```sh
-idf.py set-target esp32
-idf.py build flash monitor
-```
-
-Flash the complete project including its speech model, or use the tested merged image in [firmware](../../firmware/). Saved Wi-Fi credentials take priority; otherwise it tries `weather-wifi` / `12345678` on 2.4 GHz. Settings provides a provisioning hotspot and QR code; its English web page is at `http://192.168.4.1`.
+To restore the factory software, follow the [firmware instructions](../../firmware/README.md). To build from source, configure ESP-IDF v5.5.4 as described in [Development Environment](../../README.md#development-environment), then run `idf.py set-target esp32`, `idf.py build` and `idf.py -p PORT flash monitor` in this directory, replacing `PORT` with the device's serial port.
 
 ## Expected Result
 
-The desktop opens with 11 applications. Put JPEG images in `/photo` and MP3 files in `/music` on the SD card; open AIChats while online to activate voice chat, then say “你好小智” or tap Talk.
+The desktop opens with 11 applications, with Settings first and AIChats second; tap an icon to open an application. The screen lights up when the desktop is ready. Settings offers brightness, volume, Wi-Fi scanning and setup, and SD-card information; put JPEG images in `/photo` and MP3 files in `/music` at the SD-card root.
 
 Short press PWR once to power on; press and hold PWR for 5 seconds to power off. Use short presses when checking PWR in Button Test.
 
@@ -31,5 +24,5 @@ For application controls and Wi-Fi setup, see the [user guide](USER_GUIDE.md).
 
 ## Troubleshooting
 
-Install the complete merged image at `0x0`, including the 512 KiB model partition; a standalone application image is insufficient for first installation. Photos are decoded when Photos opens; Music, Mic Test and AIChats share the audio device exclusively. Network time updates the desktop clock (UTC+8) while Sensor reads the hardware RTC independently. Peripheral interfaces are in [components/esp32_touch_lcd_3_5](components/esp32_touch_lcd_3_5/).
+Weather and AIChats require Internet access; follow the on-screen instructions to activate AIChats. If a speech model is missing, flash the complete factory firmware or use a full `idf.py flash` rather than flashing only the application; see the [user guide](USER_GUIDE.md#common-questions) for other questions.
 

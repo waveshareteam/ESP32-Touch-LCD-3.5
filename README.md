@@ -43,7 +43,7 @@ Battery and battery-free options use the same examples. The V1.1 and V1.2 hardwa
 3. Select **ESP32** in Flash Download Tool and flash the complete merged image at `0x0`; erase Flash before changing partition layouts.
 4. Reset to open the desktop, configure Wi-Fi in Settings, then open AIChats to activate the service.
 
-[Current factory source](examples/factory/) includes Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048 and Mic Test. The default 2.4 GHz access point is `weather-wifi`, password `12345678`; Settings also offers QR provisioning. The [legacy factory example](examples/esp-idf/01_factory/) is retained for reference.
+[Current factory source](examples/factory/) provides 11 applications: Settings, AIChats, Touch Test, Photos, Weather, Music, Sensor (RTC only), 2048, Mic Test, Button Test and Display Test. For Wi-Fi setup and application controls, see the [user guide](examples/factory/USER_GUIDE.md). The [legacy factory example source](examples/esp-idf/01_factory/) is retained for reference.
 
 Example firmware packages are available from [Releases](https://github.com/waveshareteam/ESP32-Touch-LCD-3.5/releases), with flashing scripts and instructions included.
 
@@ -80,6 +80,8 @@ Example firmware packages are available from [Releases](https://github.com/waves
 | [11_bt_music_receiver_arduino_i2s](examples/arduino/examples/11_bt_music_receiver_arduino_i2s/) | Receive Bluetooth Classic A2DP audio and show track metadata. |
 
 Shared libraries: [examples/arduino/libraries](examples/arduino/libraries/).
+
+<a id="development-environment"></a>
 
 ## 🛠️ Development Environment
 
