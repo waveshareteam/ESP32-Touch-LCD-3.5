@@ -52,6 +52,12 @@
 
 Music、Mic Test 和 AIChats 独占共用音频设备，切换前先退出当前音频应用。
 
+## BSP 维护
+
+BSP 按 S3-3.5 的文件分工及公共接口组织：`include/bsp/esp32_touch_lcd_3_5.h` 集中定义引脚及 I2C、音频、LVGL 接口，`display.h` 与 `touch.h` 分别定义屏幕及触摸接口。`esp32_touch_lcd_3_5.cpp` 按 I2C、SD、音频、屏幕、触摸、LVGL 顺序实现；`bsp_board.cpp` 负责 IO 扩展器、AXP2101、按键、RTC、Wi-Fi 及统一初始化入口。通过 `bsp_init()` 初始化外设，桌面创建完成后调用 `bsp_display_show()` 点亮背光。
+
+保留 ESP32 的硬件差异：PWR 为 GPIO36 高电平有效，BOOT 为 GPIO0 低电平有效；LCD 与 SD 共用 SPI2，BSP 保留互斥和 LCD DMA 完成等待；本型号没有 IMU 或摄像头。Display Test 通过 `0xD0` 开启 FT6336 硬件手势，轮询 `0xD3` 判断双击值 `0x24`，并清除、回读校验手势结果，避免重复触发。退出或暂停测试时停止读取并关闭手势模式，恢复普通坐标触摸。
+
 ## 常见问题
 
 - **Wi-Fi 已连接，但天气或小智不可用：**确认热点能够访问互联网；连上热点不代表远端天气或语音服务一定能访问。

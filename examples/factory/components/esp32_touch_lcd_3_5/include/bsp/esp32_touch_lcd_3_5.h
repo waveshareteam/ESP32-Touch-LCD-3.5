@@ -48,14 +48,11 @@ extern "C" {
 /* BOOT button: active-low input. */
 #define BSP_BUTTON_BOOT         GPIO_NUM_0
 
-/* MicroSD card chip select: data/clock share the LCD SPI2 bus above. */
-#define BSP_SD_CS               GPIO_NUM_15
-
 /* PWR key SYS_OUT: active-high input with external bias; GPIO36 is input-only. */
-#define BSP_USER_INPUT          GPIO_NUM_36
-#define BSP_BUTTON_PWR          BSP_USER_INPUT
+#define BSP_BUTTON_PWR          GPIO_NUM_36
 
-/* MicroSD filesystem mount path. */
+/* MicroSD card: data/clock share the LCD SPI2 bus above, separate chip select. */
+#define BSP_SD_CS               GPIO_NUM_15
 #define BSP_SD_MOUNT_POINT      "/sdcard"
 
 /* ES8311 audio codec: I2S clocks, speaker output and microphone input.

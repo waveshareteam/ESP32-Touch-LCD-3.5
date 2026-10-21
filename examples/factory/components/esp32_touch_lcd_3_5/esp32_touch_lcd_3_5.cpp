@@ -78,6 +78,9 @@ i2c_master_bus_handle_t bsp_i2c_get_handle(void)
     return bsp_i2c_init() == ESP_OK ? i2c_bus : nullptr;
 }
 
+/**************************************************************************************************
+ * Shared LCD/SD SPI transport (ESP32 hardware-specific)
+ **************************************************************************************************/
 static esp_err_t shared_spi_init(void)
 {
     if (spi_ready) return ESP_OK;
@@ -138,6 +141,9 @@ static esp_err_t sd_spi_transaction(int slot, sdmmc_command_t *cmd)
     return sdspi_host_do_transaction(slot, cmd);
 }
 
+/**************************************************************************************************
+ * SD card interface
+ **************************************************************************************************/
 static esp_err_t sdcard_mount_locked(void)
 {
     if (sdcard) return ESP_OK;
@@ -352,6 +358,9 @@ esp_err_t bsp_audio_i2s_write(void *data, size_t size, size_t *written, uint32_t
     return tx ? i2s_channel_write(tx, data, size, written, timeout_ms) : ESP_ERR_INVALID_STATE;
 }
 
+/**************************************************************************************************
+ * LCD panel and backlight interface
+ **************************************************************************************************/
 esp_err_t bsp_display_brightness_init(void)
 {
     if (backlight_ready) return ESP_OK;
@@ -422,10 +431,10 @@ esp_err_t bsp_display_new(const bsp_display_config_t *config, esp_lcd_panel_hand
     esp_lcd_panel_io_handle_t new_io = nullptr;
     if (config && config->max_transfer_sz > BSP_LCD_H_RES * CONFIG_BSP_LCD_BUFFER_HEIGHT * 2) return ESP_ERR_INVALID_ARG;
     auto create = [&]() -> esp_err_t {
+        ESP_RETURN_ON_ERROR(bsp_display_brightness_init(), TAG, "Backlight");
         ESP_RETURN_ON_ERROR(bsp_i2c_init(), TAG, "I2C");
         ESP_RETURN_ON_ERROR(bsp_io_expander_init(), TAG, "Expander");
         ESP_RETURN_ON_ERROR(bsp_power_init(), TAG, "Power");
-        ESP_RETURN_ON_ERROR(bsp_display_brightness_init(), TAG, "Backlight");
         ESP_RETURN_ON_ERROR(shared_spi_init(), TAG, "Shared SPI");
         esp_lcd_panel_io_spi_config_t io = {};
         io.cs_gpio_num = BSP_LCD_CS;
@@ -473,6 +482,9 @@ esp_err_t bsp_display_new(const bsp_display_config_t *config, esp_lcd_panel_hand
     *ret_io = new_io;
     return ESP_OK;
 }
+/**************************************************************************************************
+ * Touch interface: coordinates and factory hardware gestures
+ **************************************************************************************************/
 esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t *ret_touch)
 {
     (void)config;
@@ -566,6 +578,9 @@ esp_err_t bsp_touch_get_double_click(bool *detected)
     return ESP_OK;
 }
 
+/**************************************************************************************************
+ * LVGL port: display, input device and locking
+ **************************************************************************************************/
 static lv_display_t *bsp_display_lcd_init(const bsp_display_cfg_t *cfg)
 {
     bsp_display_config_t panel_cfg = {};

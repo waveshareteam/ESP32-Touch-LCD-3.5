@@ -15,11 +15,11 @@ typedef struct {
 esp_err_t bsp_init(void);
 const bsp_init_status_t *bsp_get_init_status(void);
 esp_err_t bsp_io_expander_init(void);
-esp_err_t bsp_io_expander_read_input(bool *high);
 esp_err_t bsp_power_init(void);
 
 lv_display_t *bsp_display_get(void);
 esp_lcd_touch_handle_t bsp_touch_get_handle(void);
+/* Initialize both physical inputs; PWR is independent of the IO expander. */
 esp_err_t bsp_user_button_init(void);
 uint32_t bsp_user_button_get_press_count(void);
 
@@ -27,7 +27,8 @@ typedef enum {
     BSP_BUTTON_ID_BOOT,
     BSP_BUTTON_ID_PWR,
 } bsp_button_id_t;
-/* Normalized physical state: BOOT GPIO0 is active-low; PWR SYS_OUT on
+/* Same APP-facing interface as S3-3.5, with board-specific pin access.
+ * Normalized physical state: BOOT GPIO0 is active-low; PWR SYS_OUT on
  * GPIO36 is active-high. Does not change power-key shutdown timing. */
 esp_err_t bsp_button_get_pressed(bsp_button_id_t button, bool *pressed);
 

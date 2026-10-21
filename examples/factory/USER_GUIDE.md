@@ -52,6 +52,12 @@ Use 320 × 480 JPEGs for predictable memory usage and quick loading. Photos scan
 
 Music, Mic Test and AIChats share one audio device exclusively. Exit the current audio application before opening another one.
 
+## BSP maintenance
+
+The BSP follows the S3-3.5 file layout and common interfaces. `include/bsp/esp32_touch_lcd_3_5.h` contains pin assignments and I2C, audio and LVGL interfaces; `display.h` and `touch.h` expose panel and touch interfaces. `esp32_touch_lcd_3_5.cpp` implements I2C, SD, audio, panel, touch and LVGL in that order. `bsp_board.cpp` owns the IO expander, AXP2101, buttons, RTC, Wi-Fi and board initialization. Initialize peripherals with `bsp_init()`, then call `bsp_display_show()` after creating the desktop to release the backlight.
+
+Hardware differences remain local to the BSP: PWR is active-high GPIO36, BOOT is active-low GPIO0, and LCD/SD share SPI2 with serialized transactions and an LCD DMA completion barrier. This board has no IMU or camera. Display Test enables FT6336 hardware gestures through register `0xD0`, polls register `0xD3` for double click `0x24`, and clears and verifies the result to prevent replay. Leaving or pausing the test stops the reader and disables gesture mode to restore normal touch coordinates.
+
 ## Common questions
 
 - **Wi-Fi connects but weather or AIChats does not work:** check that the hotspot has Internet access. Network connection alone does not guarantee that the remote weather or voice service is reachable.

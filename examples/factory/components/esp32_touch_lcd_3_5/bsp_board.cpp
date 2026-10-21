@@ -6,23 +6,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
-#include "driver/spi_master.h"
-#include "driver/ledc.h"
-#include "driver/sdspi_host.h"
 #include "esp_check.h"
 #include "esp_log.h"
-#include "esp_heap_caps.h"
-#include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_event.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
-#include "esp_vfs_fat.h"
-#include "sdmmc_cmd.h"
 #include "nvs_flash.h"
-#include "esp_lcd_st7796.h"
-#include "esp_lcd_panel_io_interface.h"
-#include "esp_lcd_touch_ft6336.h"
 #include "esp_io_expander_tca9554.h"
 #include "bsp_board_extra.h"
 #include "bsp_board_internal.h"
@@ -38,7 +28,7 @@ static SemaphoreHandle_t sensor_mutex;
 static XPowersAXP2101 power;
 static SensorPCF85063 rtc;
 static bool power_ready, rtc_ready, wifi_ready;
-static bool expander_ready;
+static bool expander_ready, power_button_ready;
 static esp_timer_handle_t power_timer;
 static button_handle_t boot_button;
 static std::atomic<uint32_t> button_presses{0};
@@ -110,6 +100,9 @@ static int register_write(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len)
     return ret == ESP_OK ? 0 : -1;
 }
 
+/**************************************************************************************************
+ * IO expander: board reset and peripheral power outputs
+ **************************************************************************************************/
 esp_err_t bsp_io_expander_init(void)
 {
     if (expander_ready) return ESP_OK;
@@ -120,13 +113,6 @@ esp_err_t bsp_io_expander_init(void)
     }
     ESP_RETURN_ON_ERROR(esp_io_expander_set_dir(expander, IO_EXPANDER_PIN_NUM_0 | IO_EXPANDER_PIN_NUM_1 | IO_EXPANDER_PIN_NUM_2,
                                               IO_EXPANDER_OUTPUT), TAG, "EXIO outputs");
-    gpio_config_t input_cfg = {};
-    input_cfg.pin_bit_mask = 1ULL << BSP_BUTTON_PWR;
-    input_cfg.mode = GPIO_MODE_INPUT;
-    // GPIO36 has no internal pull resistors; SYS_OUT is biased by the board.
-    input_cfg.pull_up_en = GPIO_PULLUP_DISABLE;
-    input_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    ESP_RETURN_ON_ERROR(gpio_config(&input_cfg), TAG, "GPIO36 input");
     ESP_RETURN_ON_ERROR(esp_io_expander_set_level(expander, IO_EXPANDER_PIN_NUM_0 | IO_EXPANDER_PIN_NUM_1, 0), TAG, "EXIO low");
     vTaskDelay(pdMS_TO_TICKS(100));
     ESP_RETURN_ON_ERROR(esp_io_expander_set_level(expander, IO_EXPANDER_PIN_NUM_0 | IO_EXPANDER_PIN_NUM_1 | IO_EXPANDER_PIN_NUM_2, 1),
@@ -136,14 +122,9 @@ esp_err_t bsp_io_expander_init(void)
     return ESP_OK;
 }
 
-esp_err_t bsp_io_expander_read_input(bool *high)
-{
-    if (!high) return ESP_ERR_INVALID_ARG;
-    if (!expander_ready) return ESP_ERR_INVALID_STATE;
-    *high = gpio_get_level(BSP_USER_INPUT) != 0;
-    return ESP_OK;
-}
-
+/**************************************************************************************************
+ * AXP2101 power and battery management
+ **************************************************************************************************/
 // Read the actual PMIC registers; do not report a requested mode as verified.
 // Caller holds sensor_mutex, including across the PWM read/modify/write.
 static esp_err_t power_log_dcdc(const char *stage, uint8_t *pwm_value = nullptr)
@@ -272,9 +253,22 @@ esp_err_t bsp_battery_get_info(bsp_battery_info_t *info)
     return register_error;
 }
 
+/**************************************************************************************************
+ * Buttons: BOOT GPIO0 and PWR SYS_OUT GPIO36
+ **************************************************************************************************/
 static void button_pressed(void *, void *) { button_presses.fetch_add(1); }
 esp_err_t bsp_user_button_init(void)
 {
+    if (!power_button_ready) {
+        gpio_config_t input_cfg = {};
+        input_cfg.pin_bit_mask = 1ULL << BSP_BUTTON_PWR;
+        input_cfg.mode = GPIO_MODE_INPUT;
+        // GPIO36 is input-only with external bias, not an expander input.
+        input_cfg.pull_up_en = GPIO_PULLUP_DISABLE;
+        input_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
+        ESP_RETURN_ON_ERROR(gpio_config(&input_cfg), TAG, "PWR GPIO36 input");
+        power_button_ready = true;
+    }
     if (boot_button) return ESP_OK;
     button_config_t cfg = {};
     button_gpio_config_t gpio = {};
@@ -296,7 +290,7 @@ esp_err_t bsp_button_get_pressed(bsp_button_id_t button, bool *pressed)
         *pressed = gpio_get_level(BSP_BUTTON_BOOT) == 0;
         return ESP_OK;
     case BSP_BUTTON_ID_PWR:
-        if (!expander_ready) return ESP_ERR_INVALID_STATE; // GPIO36 configured during board IO init.
+        if (!power_button_ready) return ESP_ERR_INVALID_STATE;
         *pressed = gpio_get_level(BSP_BUTTON_PWR) != 0;
         return ESP_OK;
     default:
@@ -304,6 +298,9 @@ esp_err_t bsp_button_get_pressed(bsp_button_id_t button, bool *pressed)
     }
 }
 
+/**************************************************************************************************
+ * RTC interface (no IMU on this board)
+ **************************************************************************************************/
 static bool valid_datetime(const bsp_sensor_datetime_t &d)
 {
     if (d.year < 2000 || d.year > 2099 || d.month < 1 || d.month > 12 ||
@@ -367,6 +364,9 @@ esp_err_t bsp_rtc_init(void)
     return ret;
 }
 
+/**************************************************************************************************
+ * Wi-Fi driver and netif lifecycle; APPs own provisioning
+ **************************************************************************************************/
 esp_err_t bsp_wifi_init(void)
 {
     if (wifi_ready) return ESP_OK;
@@ -386,6 +386,9 @@ esp_err_t bsp_wifi_init(void)
     return ESP_OK;
 }
 
+/**************************************************************************************************
+ * Board initialization entry point
+ **************************************************************************************************/
 static void report(const char *name, esp_err_t result)
 {
     if (result == ESP_OK) ESP_LOGI(TAG, "%s ready", name);
@@ -412,7 +415,7 @@ esp_err_t bsp_init(void)
         if (bsp_board_status.power != ESP_OK) return bsp_board_status.power;
         return bsp_board_status.display;
     }
-    bsp_board_status.button = bsp_user_button_init(); report("BOOT button", bsp_board_status.button);
+    bsp_board_status.button = bsp_user_button_init(); report("BOOT/PWR buttons", bsp_board_status.button);
     bsp_board_status.audio = bsp_extra_codec_init(); report("ES8311", bsp_board_status.audio);
     bsp_board_status.rtc = bsp_rtc_init(); report("PCF85063", bsp_board_status.rtc);
     bsp_board_status.wifi = bsp_wifi_init(); report("Wi-Fi driver", bsp_board_status.wifi);

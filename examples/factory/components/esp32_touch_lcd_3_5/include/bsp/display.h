@@ -44,8 +44,11 @@ typedef struct {
  * \code{.c}
  * esp_lcd_panel_del(panel);
  * esp_lcd_panel_io_del(io);
- * spi_bus_free(spi_num_from_configuration);
  * \endcode
+ *
+ * The SPI bus is shared with the SD card and remains BSP-owned. Do not free
+ * it while either peripheral is active. Display handles managed by
+ * bsp_display_start() must not be deleted by an APP.
  *
  * @param[in]  config    display configuration
  * @param[out] ret_panel esp_lcd panel handle
