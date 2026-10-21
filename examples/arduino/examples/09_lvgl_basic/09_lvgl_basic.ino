@@ -32,35 +32,34 @@ TouchDrvFT6X36 touch;
 uint32_t screenWidth;
 uint32_t screenHeight;
 uint32_t bufSize;
-lv_disp_draw_buf_t draw_buf;
-lv_color_t *disp_draw_buf1;
-lv_color_t *disp_draw_buf2;
-lv_disp_drv_t disp_drv;
+uint8_t *disp_draw_buf1;
+uint8_t *disp_draw_buf2;
+lv_display_t *display;
+
+uint32_t millis_cb(void) {
+  return millis();
+}
 
 #if LV_USE_LOG != 0
 /* Serial debugging */
-void my_print(const char *buf) {
-  Serial.printf(buf);
+void my_print(lv_log_level_t level, const char *buf) {
+  LV_UNUSED(level);
+  Serial.print(buf);
   Serial.flush();
 }
 #endif
 
 /* Display flushing */
-void my_disp_flush(lv_disp_drv_t *disp_drv, const lv_area_t *area, lv_color_t *color_p) {
+void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *color_p) {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
-#if (LV_COLOR_16_SWAP != 0)
-  gfx->draw16bitBeRGBBitmap(area->x1, area->y1, (uint16_t *)&color_p->full, w, h);
-#else
-  gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)&color_p->full, w, h);
-#endif
-
-  lv_disp_flush_ready(disp_drv);
+  gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)color_p, w, h);
+  lv_display_flush_ready(disp);
 }
 
 /*Read the touchpad*/
-void my_touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data) {
+void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
   int16_t x[1], y[1];
   uint8_t touched = touch.getPoint(x, y, 1);
 
@@ -97,7 +96,7 @@ void setup() {
   Serial.begin(115200);
   // Serial.setDebugOutput(true);
   // while(!Serial);
-  Serial.println("Arduino_GFX LVGL_Arduino_v8 example ");
+  Serial.println("Arduino_GFX LVGL 9 basic example");
   String LVGL_Arduino = String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
   Serial.println(LVGL_Arduino);
 
@@ -121,6 +120,7 @@ void setup() {
   }
 
   lv_init();
+  lv_tick_set_cb(millis_cb);
 
 #if LV_USE_LOG != 0
   lv_log_register_print_cb(my_print); /* register print function for debugging */
@@ -135,31 +135,26 @@ void setup() {
   bufSize = screenWidth * 80;
 #endif
 
-  disp_draw_buf1 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_8BIT);
-  disp_draw_buf2 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_8BIT);
+  disp_draw_buf1 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_8BIT);
+  disp_draw_buf2 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_8BIT);
 
   if (!disp_draw_buf1 || !disp_draw_buf2) {
     Serial.println("LVGL disp_draw_buf allocate failed!");
   } else {
-    lv_disp_draw_buf_init(&draw_buf, disp_draw_buf1, disp_draw_buf2, bufSize);
-    /* Initialize the display */
-    lv_disp_drv_init(&disp_drv);
-    /* Change the following line to your display resolution */
-    disp_drv.hor_res = screenWidth;
-    disp_drv.ver_res = screenHeight;
-    disp_drv.flush_cb = my_disp_flush;
-    disp_drv.draw_buf = &draw_buf;
+    display = lv_display_create(screenWidth, screenHeight);
+    lv_display_set_color_format(display, LV_COLOR_FORMAT_RGB565);
+    lv_display_set_flush_cb(display, my_disp_flush);
 #ifdef DIRECT_RENDER_MODE
-    disp_drv.direct_mode = true;
+    lv_display_set_buffers(display, disp_draw_buf1, disp_draw_buf2,
+                           bufSize * 2, LV_DISPLAY_RENDER_MODE_DIRECT);
+#else
+    lv_display_set_buffers(display, disp_draw_buf1, disp_draw_buf2,
+                           bufSize * 2, LV_DISPLAY_RENDER_MODE_PARTIAL);
 #endif
-    lv_disp_drv_register(&disp_drv);
 
-    /* Initialize the (dummy) input device driver */
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = my_touchpad_read;
-    lv_indev_drv_register(&indev_drv);
+    lv_indev_t *indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+    lv_indev_set_read_cb(indev, my_touchpad_read);
 
     /* Option 1: Create simple label */
     lv_obj_t *label = lv_label_create(lv_scr_act());
@@ -190,14 +185,6 @@ void setup() {
 
 void loop() {
   lv_timer_handler(); /* let the GUI do its work */
-
-// #ifdef DIRECT_RENDER_MODE
-// #if (LV_COLOR_16_SWAP != 0)
-//   gfx->draw16bitBeRGBBitmap(0, 0, (uint16_t *)disp_draw_buf, screenWidth, screenHeight);
-// #else
-//   gfx->draw16bitRGBBitmap(0, 0, (uint16_t *)disp_draw_buf, screenWidth, screenHeight);
-// #endif
-// #endif  // !DIRECT_RENDER_MODE
 
   delay(5);
 }

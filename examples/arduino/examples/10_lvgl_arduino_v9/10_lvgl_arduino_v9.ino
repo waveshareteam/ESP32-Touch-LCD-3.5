@@ -37,8 +37,8 @@ uint32_t screenWidth;
 uint32_t screenHeight;
 uint32_t bufSize;
 lv_display_t *disp;
-lv_color_t *disp_draw_buf1;
-lv_color_t *disp_draw_buf2;
+uint8_t *disp_draw_buf1;
+uint8_t *disp_draw_buf2;
 
 #if LV_USE_LOG != 0
 void my_print(lv_log_level_t level, const char *buf)
@@ -63,7 +63,7 @@ void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
   gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
 
   /*Call it to tell LVGL you are ready*/
-  lv_disp_flush_ready(disp);
+  lv_display_flush_ready(disp);
 }
 
 /*Read the touchpad*/
@@ -144,12 +144,12 @@ void setup()
 
 #ifdef DIRECT_RENDER_MODE
   bufSize = screenWidth * screenHeight;
-  disp_draw_buf1 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-  disp_draw_buf2 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  disp_draw_buf1 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  disp_draw_buf2 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
 #else
   bufSize = screenWidth * 40;
-  disp_draw_buf1 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-  disp_draw_buf2 = (lv_color_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+  disp_draw_buf1 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+  disp_draw_buf2 = (uint8_t *)heap_caps_malloc(bufSize * 2, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
 #endif
   if (!disp_draw_buf1 || !disp_draw_buf2)
   {
@@ -158,6 +158,7 @@ void setup()
   else
   {
     disp = lv_display_create(screenWidth, screenHeight);
+    lv_display_set_color_format(disp, LV_COLOR_FORMAT_RGB565);
     lv_display_set_flush_cb(disp, my_disp_flush);
 #ifdef DIRECT_RENDER_MODE
     lv_display_set_buffers(disp, disp_draw_buf1, disp_draw_buf2, bufSize * 2, LV_DISPLAY_RENDER_MODE_DIRECT);
