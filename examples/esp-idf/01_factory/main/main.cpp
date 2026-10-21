@@ -76,7 +76,7 @@ void button_init(void);
 
 void touch_test(void);
 
-void print_internal_psram_free_size(char *str) {
+void print_internal_psram_free_size(const char *str) {
     // 打印内部 RAM 剩余内存
     size_t internal_free = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     printf("%s,Internal RAM free size: %d bytes\n",str, internal_free);
@@ -148,29 +148,16 @@ void lv_port_init(void)
     lvgl_port_cfg_t port_cfg = ESP_LVGL_PORT_INIT_CONFIG();
     lvgl_port_init(&port_cfg);
     ESP_LOGI(TAG, "Adding LCD screen");
-    lvgl_port_display_cfg_t display_cfg = {
-        .io_handle = io_handle,
-        .panel_handle = panel_handle,
-        .control_handle = NULL,
-        .buffer_size = LCD_BUFFER_SIZE,
-        .double_buffer = true,
-        .trans_size = 0,
-        .hres = EXAMPLE_LCD_H_RES,
-        .vres = EXAMPLE_LCD_V_RES,
-        .monochrome = false,
-        .rotation = {
-            .swap_xy = 0,
-            .mirror_x = 1,
-            .mirror_y = 0,
-        },
-        .flags = {
-            .buff_dma = 0,
-            .buff_spiram = 1,
-            .sw_rotate = 1,
-            .full_refresh = 0,
-            .direct_mode = 0,
-        },
-    };
+    lvgl_port_display_cfg_t display_cfg = {};
+    display_cfg.io_handle = io_handle;
+    display_cfg.panel_handle = panel_handle;
+    display_cfg.buffer_size = LCD_BUFFER_SIZE;
+    display_cfg.double_buffer = true;
+    display_cfg.hres = EXAMPLE_LCD_H_RES;
+    display_cfg.vres = EXAMPLE_LCD_V_RES;
+    display_cfg.rotation.mirror_x = 1;
+    display_cfg.flags.buff_spiram = 1;
+    display_cfg.flags.sw_rotate = 1;
 
 #if EXAMPLE_DISPLAY_ROTATION == 90
     display_cfg.rotation.swap_xy = 1;
@@ -188,10 +175,9 @@ void lv_port_init(void)
 #endif
 
     lvgl_disp = lvgl_port_add_disp(&display_cfg);
-    const lvgl_port_touch_cfg_t touch_cfg = {
-        .disp = lvgl_disp,
-        .handle = touch_handle,
-    };
+    lvgl_port_touch_cfg_t touch_cfg = {};
+    touch_cfg.disp = lvgl_disp;
+    touch_cfg.handle = touch_handle;
     lvgl_touch_indev = lvgl_port_add_touch(&touch_cfg);
 }
 

@@ -136,47 +136,6 @@ extern "C" {
 #endif
 
 
-/* LCD settings */
-#define EXAMPLE_LCD_SPI_NUM         (SPI3_HOST)
-#define EXAMPLE_LCD_PIXEL_CLK_HZ    (80 * 1000 * 1000)
-#define EXAMPLE_LCD_CMD_BITS        (8)
-#define EXAMPLE_LCD_PARAM_BITS      (8)
-#define EXAMPLE_LCD_BITS_PER_PIXEL  (16)
-#define EXAMPLE_LCD_DRAW_BUFF_DOUBLE (1)
-#define EXAMPLE_LCD_DRAW_BUFF_HEIGHT (50)
-#define EXAMPLE_LCD_BL_ON_LEVEL     (1)
-#define Backlight_MAX           100   
-#define DEFAULT_BACKLIGHT       80 
-
-/* LCD pins */
-#define EXAMPLE_LCD_GPIO_SCLK       (GPIO_NUM_5)
-#define EXAMPLE_LCD_GPIO_MOSI       (GPIO_NUM_1)
-#define EXAMPLE_LCD_GPIO_RST        (GPIO_NUM_NC)
-#define EXAMPLE_LCD_GPIO_DC         (GPIO_NUM_3)
-#define EXAMPLE_LCD_GPIO_CS         (GPIO_NUM_6)
-#define EXAMPLE_LCD_GPIO_BL         (GPIO_NUM_NC)
-
-/* LCD touch pins */
-#define EXAMPLE_TOUCH_GPIO_RST      (GPIO_NUM_NC)
-
-#ifdef CONFIG_WAVESHARE_1_47INCH_TOUCH_LCD
-#define EXAMPLE_LCD_H_RES   (172)
-#define EXAMPLE_LCD_V_RES   (320)
-#define EXAMPLE_TOUCH_GPIO_INT      (GPIO_NUM_9)
-#elif defined(CONFIG_WAVESHARE_2INCH_TOUCH_LCD)
-#define EXAMPLE_LCD_H_RES   (240)
-#define EXAMPLE_LCD_V_RES   (320)
-#define EXAMPLE_TOUCH_GPIO_INT      (GPIO_NUM_9)
-#elif defined(CONFIG_WAVESHARE_2_8INCH_TOUCH_LCD)
-#define EXAMPLE_LCD_H_RES   (240)
-#define EXAMPLE_LCD_V_RES   (320)
-#define EXAMPLE_TOUCH_GPIO_INT      (GPIO_NUM_NC)
-#elif defined(CONFIG_WAVESHARE_3_5INCH_TOUCH_LCD)
-#define EXAMPLE_LCD_H_RES   (320)
-#define EXAMPLE_LCD_V_RES   (480)
-#define EXAMPLE_TOUCH_GPIO_INT      (GPIO_NUM_9)
-#endif
-
 // GPIO assignment
 #define LED_STRIP_GPIO_PIN  38
 #define LED_STRIP_LED_COUNT 7

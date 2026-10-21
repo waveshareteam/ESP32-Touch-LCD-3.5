@@ -37,15 +37,15 @@ static int s_bits_per_chan = 16;
 static i2s_chan_handle_t            tx_handle = NULL;        // I2S tx channel handler
 static i2s_chan_handle_t            rx_handle = NULL;        // I2S rx channel handler
 #endif
-static audio_codec_data_if_t *record_data_if  = NULL;
-static audio_codec_ctrl_if_t *record_ctrl_if  = NULL;
-static audio_codec_if_t *record_codec_if      = NULL;
+static const audio_codec_data_if_t *record_data_if  = NULL;
+static const audio_codec_ctrl_if_t *record_ctrl_if  = NULL;
+static const audio_codec_if_t *record_codec_if      = NULL;
 static esp_codec_dev_handle_t record_dev      = NULL;
 
-static audio_codec_data_if_t *play_data_if    = NULL;
-static audio_codec_ctrl_if_t *play_ctrl_if    = NULL;
-static audio_codec_gpio_if_t *play_gpio_if    = NULL;
-static audio_codec_if_t *play_codec_if        = NULL;
+static const audio_codec_data_if_t *play_data_if    = NULL;
+static const audio_codec_ctrl_if_t *play_ctrl_if    = NULL;
+static const audio_codec_gpio_if_t *play_gpio_if    = NULL;
+static const audio_codec_if_t *play_codec_if        = NULL;
 static esp_codec_dev_handle_t play_dev        = NULL;
 static uint32_t SDCard_Size  = 0;
 static i2c_master_bus_handle_t i2c_bus_handle = NULL;
@@ -243,7 +243,7 @@ esp_err_t esp_audio_get_play_vol(int *volume)
 }
 
 // static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, i2s_channel_fmt_t channel_format, i2s_bits_per_chan_t bits_per_chan)
-static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int channel_format, int bits_per_chan)
+static esp_err_t bsp_i2s_init(int i2s_num, uint32_t sample_rate, int channel_format, int bits_per_chan)
 {
     esp_err_t ret_val = ESP_OK;
 
@@ -305,7 +305,7 @@ static esp_err_t bsp_i2s_init(i2s_port_t i2s_num, uint32_t sample_rate, int chan
     return ret_val;
 }
 
-static esp_err_t bsp_i2s_deinit(i2s_port_t i2s_num)
+static esp_err_t bsp_i2s_deinit(int i2s_num)
 {
     esp_err_t ret_val = ESP_OK;
 
