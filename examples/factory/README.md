@@ -25,6 +25,8 @@ Flash the complete project including its speech model, or use the tested merged 
 
 The desktop opens with nine applications. Put JPEG images in `/photo` and MP3 files in `/music` on the SD card; open AIChats while online to activate voice chat, then say “你好小智” or tap Talk.
 
+For application controls and Wi-Fi setup, see the [user guide](USER_GUIDE.md).
+
 ## Troubleshooting
 
 Install the complete merged image at `0x0`, including the 512 KiB model partition; a standalone application image is insufficient for first installation. Photos are decoded when Photos opens; Music, Mic Test and AIChats share the audio device exclusively. Network time updates the desktop clock (UTC+8) while Sensor reads the hardware RTC independently. Peripheral interfaces are in [components/esp32_touch_lcd_3_5](components/esp32_touch_lcd_3_5/).

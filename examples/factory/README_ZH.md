@@ -25,6 +25,8 @@ idf.py build flash monitor
 
 桌面显示九个应用。SD 卡的 `/photo` 放 JPEG，`/music` 放 MP3；联网后打开 AIChats 完成激活，再说“你好小智”或点击 Talk 开始对话。
 
+各应用操作与配网步骤请参照[使用说明](USER_GUIDE_ZH.md)。
+
 ## 常见问题
 
 首次安装需在 `0x0` 烧录完整合并镜像，其中包含 512 KiB 语音模型分区，仅烧录 APP 不足以启用语音。相册在打开时才解析图片；Music、Mic Test 和 AIChats 独占共享音频设备。联网同步桌面时间（UTC+8），Sensor 独立读取硬件 RTC。外设接口位于 [components/esp32_touch_lcd_3_5](components/esp32_touch_lcd_3_5/)。
